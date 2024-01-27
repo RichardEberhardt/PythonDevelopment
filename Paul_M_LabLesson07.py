@@ -11,7 +11,7 @@
 #			switch is open
 #		=	1
 #			switch is closed
-# 
+# comment
 import RPi.GPIO as GPIO
 from time import sleep
 delay=.1
