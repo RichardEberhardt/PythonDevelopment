@@ -15,6 +15,7 @@
 # another comment
 # and another
 # again
+
 <<<<<<< Updated upstream
 =======
 # and yet again
