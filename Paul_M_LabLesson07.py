@@ -15,6 +15,11 @@
 # another comment
 # and another
 # again
+<<<<<<< Updated upstream
+=======
+# and yet again
+# more
+>>>>>>> Stashed changes
 import RPi.GPIO as GPIO
 from time import sleep
 delay=.1
