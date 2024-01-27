@@ -1,6 +1,7 @@
 # used in lab6 on GPIO pins and Pull Up and Pull Down reistors
 # added a  comment
 # added another
+# and a third
 import RPi.GPIO as GPIO
 
 import time
