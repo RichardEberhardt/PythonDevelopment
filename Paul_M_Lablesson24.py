@@ -7,6 +7,7 @@
 # 	Yellow:			Warning at least one motion detected 
 
 # this program was updated to use sound a passive buzzer when motion is detected
+# 
 
 import RPi.GPIO as GPIO
 import time
