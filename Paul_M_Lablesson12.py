@@ -12,6 +12,7 @@
 #		=	1
 #			switch is closed
 # 
+#
 # want to capture event when button goes from 0 (pressed) to 1 (not pressed)
 import RPi.GPIO as GPIO
 import time
