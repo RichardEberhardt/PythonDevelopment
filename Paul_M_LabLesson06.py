@@ -4,6 +4,7 @@
 # and a third
 # and a fourth
 # fifth
+# sixth
 import RPi.GPIO as GPIO
 
 import time
