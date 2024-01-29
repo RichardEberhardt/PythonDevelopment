@@ -2,6 +2,7 @@
 
 # uses Pulse Width Modulation to ge full range of colors
 # comment
+# another comment
 
 import RPi.GPIO as GPIO
 import ADC0834
