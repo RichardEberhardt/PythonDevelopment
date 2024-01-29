@@ -1,6 +1,7 @@
 # Lab 16: Set Color of RPG LED with Potentiometers
 
 # uses Pulse Width Modulation to ge full range of colors
+# comment
 
 import RPi.GPIO as GPIO
 import ADC0834
