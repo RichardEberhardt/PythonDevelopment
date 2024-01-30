@@ -1,4 +1,5 @@
 # comment
+# comment 2
 import LCD1602
 import time
 LCD1602.init(0x27, 1)
