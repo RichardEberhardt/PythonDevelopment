@@ -44,44 +44,51 @@ import board
 
 LCD1602.init(0x27, 1)
 
-# pin for reading the sensor
+# pin for reading the temp/humidity sensor
 dht11Pin=26
-# pin for the switch
-inButtonPin=20
+# pin for changing the modes
+modeButtonPin=20
+# pin for buzzer
+buzzPin=17
 
 GPIO.setmode(GPIO.BCM)
 
 GPIO.setup(dht11Pin,GPIO.IN,pull_up_down=GPIO.PUD_DOWN)
-GPIO.setup(inButtonPin,GPIO.IN,pull_up_down=GPIO.PUD_UP)
+GPIO.setup(modeButtonPin,GPIO.IN,pull_up_down=GPIO.PUD_UP)
+
+GPIO.setup(buzzPin,GPIO.OUT)
 
 currentTemperatureType = 'F'
 
-lastInButtonState=-1
-currentInButtonState=-1
+lastmodeButtonState=-1
+currentmodeButtonState=-1
 
 ON_OFF=True
 
 sensor = adafruit_dht.DHT11(board.D26)
+
+buzz=GPIO.PWM(buzzPin,400)
+buzz.start(50)
 
 while True:
 
 	try:
 	
 	
-		currentInButtonState=GPIO.input(inButtonPin)
+		currentmodeButtonState=GPIO.input(modeButtonPin)
 		
-		print('current button state is… ',currentInButtonState)
+		print('current button state is… ',currentmodeButtonState)
 		
-		if currentInButtonState!=lastInButtonState: #button state changed
-			if currentInButtonState==GPIO.LOW: 		#button was just pressed
+		if currentmodeButtonState!=lastmodeButtonState: #button state changed
+			if currentmodeButtonState==GPIO.LOW: 		#button was just pressed
 				ON_OFF=not ON_OFF
 				if currentTemperatureType == "F":	#adjust temperature type
 					currentTemperatureType="C"
 				else:
 					currentTemperatureType = 'F'
 			else:	
-				if currentInButtonState==GPIO.HIGH:	#button was just released
-					lastInButtonState=currentInButtonState
+				if currentmodeButtonState==GPIO.HIGH:	#button was just released
+					lastmodeButtonState=currentmodeButtonState
 		print('Current Temperature Type: ', currentTemperatureType)		
 					
 		# Print the values to the serial port
