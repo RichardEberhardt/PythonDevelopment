@@ -15,14 +15,19 @@
 # 
 # Tasks
 # 
-# 	1.	Retrieve and test the temperature/humidity sensor with LCD 
-# 	2.	Make sure this is still working
+# 	1.	Retrieve and test the temperature/humidity sensor with LCD 	- CPT
+# 	2.	Make sure this is still working								- CPT
 # 	3.	changes
-# 			Migrate the buzzer set up to the board
-# 			Add button for changing modes?
+# 			Migrate the buzzer set up to the board					- CPT
+# 			Add button for changing modes?							- CPT
+#			Add potentiometer for setting trigger temperature
+#
 # 			Change code
 # 				Accommodate the buzzer
 # 				Code mode changer
+#				
+#
+#
 # 
 # 
 # 	Components
