@@ -120,7 +120,13 @@ while True:
 		
 		time.sleep(2)
 		
-		
+		for i in range(150,2000):
+			buzz.ChangeFrequency(i)
+			time.sleep(.0001)
+			
+		for i in range(2000,150,-1):
+			buzz.ChangeFrequency(i)
+			time.sleep(.0001)
 		
 		
 
