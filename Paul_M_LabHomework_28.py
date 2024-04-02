@@ -17,19 +17,17 @@
 # 
 # 	1.	Retrieve and test the temperature/humidity sensor with LCD 	- CPT
 # 	2.	Make sure this is still working								- CPT
-# 	3.	changes
+# 	3.	Board changes
 # 			Migrate the buzzer set up to the board					- CPT
-# 			Add button for changing modes?							- CPT
-#			Add potentiometer for setting trigger temperature
+# 			Add button for changing modes (may not use)				- CPT
+#			Add potentiometer for setting trigger temperature		- CPT
+#			Add ADC chip to the bread board							- CPT
 #
-# 			Change code
-# 				Accommodate the buzzer
-# 				Code mode changer
+#	4. Code Changes
+# 			Read and process potentiometer							- CPT
+#			Accommodate the buzzer									- CPT
+# 			Code mode changer										- CPT
 #				
-#
-#
-# 
-# 
 # 	Components
 # 		LCD
 # 		Add temperature and humidity sensor DHT11
@@ -46,6 +44,8 @@ import LCD1602
 import adafruit_dht
 import time
 import board
+import ADC0834
+
 
 LCD1602.init(0x27, 1)
 
@@ -54,7 +54,12 @@ dht11Pin=26
 # pin for changing the modes
 modeButtonPin=20
 # pin for buzzer
-buzzPin=17
+# buzzPin=17 had to change this since the library needs pin 17
+buzzPin=22
+
+potentiometerAnalogValue=0
+
+potentiometerDigitalValue=0
 
 GPIO.setmode(GPIO.BCM)
 
@@ -64,70 +69,101 @@ GPIO.setup(modeButtonPin,GPIO.IN,pull_up_down=GPIO.PUD_UP)
 GPIO.setup(buzzPin,GPIO.OUT)
 
 currentTemperatureType = 'F'
+currentTemperature=100
 
-lastmodeButtonState=-1
-currentmodeButtonState=-1
+lastModeButtonState=-1
+currentModeButtonState=-1
 
+# ON_OFF==True means that we are in normal mode
+# ON_OFF==False means that we are in trigger set mode
 ON_OFF=True
 
 sensor = adafruit_dht.DHT11(board.D26)
 
 buzz=GPIO.PWM(buzzPin,400)
+
 buzz.start(50)
+
+triggerValueDisp=0
+
+ADC0834.setup()
 
 while True:
 
 	try:
 	
-	
-		currentmodeButtonState=GPIO.input(modeButtonPin)
+		potentiometerAnalogValue=ADC0834.getResult(0)
 		
-		print('current button state is… ',currentmodeButtonState)
+		potentiometerDigitalValue=(100/255)*potentiometerAnalogValue
 		
-		if currentmodeButtonState!=lastmodeButtonState: #button state changed
-			if currentmodeButtonState==GPIO.LOW: 		#button was just pressed
+		print("Digital value is: ", potentiometerDigitalValue)
+		
+		currentModeButtonState=GPIO.input(modeButtonPin)
+		
+#		Detects changes to the state of the pushbutton
+		
+		if currentModeButtonState!=lastModeButtonState: #button state changed
+			if currentModeButtonState==GPIO.LOW: 		#button was just pressed
 				ON_OFF=not ON_OFF
-				if currentTemperatureType == "F":	#adjust temperature type
-					currentTemperatureType="C"
-				else:
-					currentTemperatureType = 'F'
+
 			else:	
-				if currentmodeButtonState==GPIO.HIGH:	#button was just released
-					lastmodeButtonState=currentmodeButtonState
-		print('Current Temperature Type: ', currentTemperatureType)		
+				if currentModeButtonState==GPIO.HIGH:	#button was just released
+					ON_OFF=not ON_OFF
+					lastModeButtonState=currentModeButtonState
 					
-		# Print the values to the serial port
-		temperature_c 			= sensor.temperature
+		print("ON_OFF Value =", ON_OFF)	
+		
 
-		temperature_c_disp		="Temp={0:0.1f}C".format(temperature_c)
+
+		#	This part of the code handles trigger set mode	
+			
+		if ON_OFF==False:
 		
-		temperature_f = temperature_c * (9 / 5) + 32
-		temperature_f_disp		= "Temp={0:0.1f}F".format(temperature_f)
-		
-		if currentTemperatureType=='F':
-			selectedTemperatureFormatted="Temp={0:0.1f}F".format(temperature_f)
-	
+			triggerValueDisp=("Trigger={0:0.1f}".format(potentiometerDigitalValue))
+			
+			setupModeDisplay="SetUp Mode"
+
+			LCD1602.clear()
+			LCD1602.write(0,0,setupModeDisplay)		
+			LCD1602.write(0,1,triggerValueDisp)
+			
 		else:
-			selectedTemperatureFormatted="Temp={0:0.1f}C".format(temperature_c)
-
-		humidity = sensor.humidity
-		humidity_disp = "Humidity={0:0.1f}".format(humidity)
-		
-		print("Temp={0:0.1f}ºC, Temp={1:0.1f}ºF, Humidity={2:0.1f}%".format(temperature_c, 		temperature_f, humidity))
-		
-		LCD1602.write(0,0,selectedTemperatureFormatted)
-		LCD1602.write(0,1,humidity_disp)
-		
+			# This part of the code handles normal mode (shows temperature)
+									
+			temperature_c 			= sensor.temperature
+			
+			temperature_f = temperature_c * (9 / 5) + 32
+			
+			currentTemperature=temperature_f
+			
+			selectedTemperatureFormatted="Temp={0:0.1f}F".format(temperature_f)
+			
+			print(selectedTemperatureFormatted)
+			
+			currentTemperature=temperature_f
+			
+			triggerValueDisp=("Trigger={0:0.1f}".format(potentiometerDigitalValue))
+			
+			normalModeDisplay="Normal Mode"
+			
+			LCD1602.clear()
+			
+			LCD1602.write(0,0,normalModeDisplay)
+			LCD1602.write(0,1,selectedTemperatureFormatted)
+						
 		time.sleep(2)
 		
-		for i in range(150,2000):
-			buzz.ChangeFrequency(i)
-			time.sleep(.0001)
-			
-		for i in range(2000,150,-1):
-			buzz.ChangeFrequency(i)
-			time.sleep(.0001)
+		print(currentTemperature,potentiometerDigitalValue)
 		
+		if not currentTemperature>=potentiometerDigitalValue:
+			print('Found one')
+			for i in range(150,2000):
+				buzz.ChangeFrequency(i)
+				time.sleep(.0001)
+				
+			for i in range(2000,150,-1):
+				buzz.ChangeFrequency(i)
+				time.sleep(.0001)
 		
 
 	except KeyboardInterrupt:	
@@ -143,5 +179,5 @@ while True:
 		continue
 		
 	except Exception as error:
-		dhtDevice.exit()
+#		dhtDevice.exit()
 		raise error
