@@ -80,7 +80,8 @@ ON_OFF=True
 
 sensor = adafruit_dht.DHT11(board.D26)
 
-buzz=GPIO.PWM(buzzPin,400)
+# buzz=GPIO.PWM(buzzPin,400)
+buzz=GPIO.PWM(buzzPin,1)
 
 buzz.start(50)
 
@@ -122,6 +123,8 @@ while True:
 			triggerValueDisp=("Trigger={0:0.1f}".format(potentiometerDigitalValue))
 			
 			setupModeDisplay="SetUp Mode"
+			
+			GPIO.output(buzzPin,GPIO.HIGH)
 
 			LCD1602.clear()
 			LCD1602.write(0,0,setupModeDisplay)		
@@ -164,7 +167,8 @@ while True:
 			for i in range(2000,150,-1):
 				buzz.ChangeFrequency(i)
 				time.sleep(.0001)
-		
+				
+		GPIO.output(buzzPin,1)
 
 	except KeyboardInterrupt:	
 		LCD1602.clear()
